@@ -38,9 +38,6 @@ float CurrentYaw;
 UPROPERTY(EditAnywhere)
 float OpenAngle = 90.f; //TargetYaw
 
-UPROPERTY(EditAnywhere)
-AActor* ActorThatOpens = nullptr;
-
 float DoorLastOpened = 0.f;
 
 UPROPERTY(EditAnywhere)
