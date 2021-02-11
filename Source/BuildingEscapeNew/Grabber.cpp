@@ -1,4 +1,3 @@
-// Copyright Sigma
 #include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
@@ -18,7 +17,6 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty!"));
 
 	// Checking for physics Handle component
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
@@ -28,10 +26,8 @@ void UGrabber::BeginPlay()
 	SetupInputComponent();
 }
 
-void UGrabber::Grab()
+FVector UGrabber::GetPlayerReach() const
 {
-	// UE_LOG(LogTemp, Warning, TEXT("Grabber pressed!"));
-
 	// Get player's viewpoint
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
@@ -40,66 +36,24 @@ void UGrabber::Grab()
 		OUT PlayerViewPointLocation,
 		OUT PlayerViewPointRotation);
 
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
-
-	// Only raycast when the key is pressed and see if we reach any actors with physics body collision channel set.
-	FHitResult HitResult = GetFirstPhysicsBodyInReach();
-
-	UPrimitiveComponent *ComponentToGrab = HitResult.GetComponent();
-
-	// If we hit something then attach the physics handle.
-	if (HitResult.GetActor()) //pointer
-	{
-		// TODO attach a physics handle
-
-		PhysicsHandle->GrabComponentAtLocation(
-			ComponentToGrab,
-			NAME_None,
-			LineTraceEnd);
-	}
+	return PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 }
 
-void UGrabber::Release()
+FVector UGrabber::GetPlayerLocation() const
 {
-	// UE_LOG(LogTemp, Warning, TEXT("Grabber released!"));
-	PhysicsHandle->ReleaseComponent();
+	// Get player's viewpoint
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
 
-	// TODO remove/release the physics handle.
-}
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation);
 
-void UGrabber::FindPhysicsHandle()
-{
-	if (PhysicsHandle)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PhysicsHandle component found on %s."), *GetOwner()->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("No PhysicsHandle component found on %s. Please add a PhysicsHandle component."), *GetOwner()->GetName());
-	}
-}
-
-void UGrabber::SetupInputComponent()
-{
-	if (InputComponent)
-	{
-		// UE_LOG(LogTemp, Error, TEXT("Input component found on %s."), *GetOwner()->GetName());
-		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
-		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
-	}
+	return PlayerViewPointLocation;
 }
 
 FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 {
-	// Get player's viewpoint
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		OUT PlayerViewPointLocation,
-		OUT PlayerViewPointRotation);
-
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 
 	// Ray-cast out to a certain distance (Reach)
 
@@ -109,19 +63,56 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 
 	GetWorld()->LineTraceSingleByObjectType(
 		OUT Hit,
-		PlayerViewPointLocation,
-		LineTraceEnd,
+		GetPlayerLocation(),
+		GetPlayerReach(),
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParams);
 
 	AActor *ActorHit = Hit.GetActor();
 
-	if (ActorHit)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Looking at %s"), *Hit.GetActor()->GetName());
-	}
-
 	return Hit;
+}
+
+void UGrabber::Grab()
+{
+	// Only raycast when the key is pressed and see if we reach any actors with physics body collision channel set.
+	FHitResult HitResult = GetFirstPhysicsBodyInReach();
+
+	UPrimitiveComponent *ComponentToGrab = HitResult.GetComponent();
+
+	// If we hit something then attach the physics handle.
+	if (HitResult.GetActor()) //pointer
+	{
+		PhysicsHandle->GrabComponentAtLocation(
+			ComponentToGrab,
+			NAME_None,
+			GetPlayerReach());
+	}
+}
+
+void UGrabber::Release()
+{
+	// Release physics handle
+	PhysicsHandle->ReleaseComponent();
+}
+
+void UGrabber::FindPhysicsHandle()
+{
+
+	if (!PhysicsHandle)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No PhysicsHandle component found on %s. Please add a PhysicsHandle component."), *GetOwner()->GetName());
+	}
+}
+
+void UGrabber::SetupInputComponent()
+{
+	// Keybinds setup
+	if (InputComponent)
+	{
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+	}
 }
 
 // Called every frame
@@ -129,49 +120,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// Get player's viewpoint
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		OUT PlayerViewPointLocation,
-		OUT PlayerViewPointRotation);
-
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
-
 	// If the physics handle is attached.
-	if(PhysicsHandle->GrabbedComponent)
+	if (PhysicsHandle->GrabbedComponent)
 	{
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
-	// Move the object we are moving.
+		// Move the object we are moving.
+		PhysicsHandle->SetTargetLocation(GetPlayerReach());
 	}
 }
-
-// REFERENCE CODE
-// if (
-// 	(GetWorld()->LineTraceSingleByObjectType(
-// 		OUT Hit,
-// 		PlayerViewPointLocation,
-// 		LineTraceEnd,
-// 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
-// 		TraceParams)))
-// {
-// 	UE_LOG(LogTemp, Warning, TEXT("Looking at %s"), *Hit.GetActor()->GetName());
-// 	// UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty! at %f"), GetWorld()->GetTimeSeconds());
-// };
-
-// DrawDebugLine(
-// 	GetWorld(),
-// 	PlayerViewPointLocation,
-// 	LineTraceEnd,
-// 	FColor(0, 255, 0),
-// 	false,
-// 	0.f,
-// 	0,
-// 	5.f);
-
-// UE_LOG(LogTemp, Warning, TEXT("Viewpoint: %s"), *GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint());
-
-// Ray-cast out to a certain distance so our reach (basically like a tractor beam)
-
-// See what it hits
