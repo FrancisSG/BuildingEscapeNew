@@ -17,7 +17,6 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty!"));
 
 	// Checking for physics Handle component
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
@@ -71,11 +70,6 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 
 	AActor *ActorHit = Hit.GetActor();
 
-	if (ActorHit)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Looking at %s"), *Hit.GetActor()->GetName());
-	}
-
 	return Hit;
 }
 
@@ -104,11 +98,8 @@ void UGrabber::Release()
 
 void UGrabber::FindPhysicsHandle()
 {
-	if (PhysicsHandle)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PhysicsHandle component found on %s."), *GetOwner()->GetName());
-	}
-	else
+
+	if (!PhysicsHandle)
 	{
 		UE_LOG(LogTemp, Error, TEXT("No PhysicsHandle component found on %s. Please add a PhysicsHandle component."), *GetOwner()->GetName());
 	}
@@ -130,10 +121,9 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// If the physics handle is attached.
-	if(PhysicsHandle->GrabbedComponent)
+	if (PhysicsHandle->GrabbedComponent)
 	{
 		// Move the object we are moving.
 		PhysicsHandle->SetTargetLocation(GetPlayerReach());
 	}
 }
-
