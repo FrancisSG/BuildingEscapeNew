@@ -70,13 +70,10 @@ void UOpenDoor::CloseDoor(float DeltaTime)
 float UOpenDoor::TotalMassOfActors() const
 {
 	float TotalMass = 0.f;
-	UPrimitiveComponent *ComponentToAssess = nullptr;
 	// Find All Overlapping Actors
 
 	TArray<AActor *> OverlappingActors;
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
-
-	// UActorComponent* ActorComponent = nullptr;
 
 	// Add up their Masses
 	for (AActor *Actor : OverlappingActors)
