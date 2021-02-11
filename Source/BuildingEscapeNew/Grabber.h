@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -38,5 +36,10 @@ private:
 	// Return the first actor within reach with physics body.
 	FHitResult GetFirstPhysicsBodyInReach() const;
 
-};
+	// Return LineTraceEnd
+	FVector GetPlayerReach() const;
 
+	// Return PlayerViewPointLocation
+	FVector GetPlayerLocation() const;
+
+};
