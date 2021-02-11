@@ -54,4 +54,7 @@ float DoorCloseSpeed = 2.f;
 
 UPROPERTY(EditAnywhere)
 ATriggerVolume* PressurePlate;
+
+UPROPERTY(EditAnywhere)
+float MassRequired = 50.f;
 };
