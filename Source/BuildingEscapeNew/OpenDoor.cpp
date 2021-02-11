@@ -43,11 +43,9 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	{
 		OpenDoor(DeltaTime);
 		DoorLastOpened = GetWorld()->GetTimeSeconds();
-		// UE_LOG(LogTemp, Warning, TEXT("DoorLastOpened: %f DoorCloseDelay: %f"), DoorLastOpened, DoorCloseDelay);
 	}
 	else
 	{
-		// UE_LOG(LogTemp, Warning, TEXT("DoorLastOpened: %f DoorCloseDelay: %f"), DoorLastOpened, DoorCloseDelay);
 
 		if (GetWorld()->GetTimeSeconds() - DoorLastOpened > DoorCloseDelay)
 		{
@@ -58,53 +56,12 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s's Yaw is : %f"), *GetOwner()->GetName(), GetOwner()->GetActorRotation().Yaw);
-
 	DoorRotation.Yaw = FMath::FInterpTo(GetOwner()->GetActorRotation().Yaw, OpenAngle, DeltaTime, DoorOpeningSpeed);
 	GetOwner()->SetActorRotation(DoorRotation);
 }
 
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s's Yaw is : %f"), *GetOwner()->GetName(), GetOwner()->GetActorRotation().Yaw);
-
 	DoorRotation.Yaw = FMath::FInterpTo(GetOwner()->GetActorRotation().Yaw, InitialYaw, DeltaTime, DoorCloseSpeed);
 	GetOwner()->SetActorRotation(DoorRotation);
 }
-
-//------------REFERENCE CODE
-
-/* float MyFloat = 90.f;	
-
-	FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	CurrentRotation.Yaw = MyFloat;
-	GetOwner()->SetActorRotation(CurrentRotation); */
-
-/* FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	CurrentRotation.Yaw = 90.f;
-	GetOwner()->SetActorRotation(CurrentRotation); */
-
-// FRotator OpenDoor(0.f, 0.f, 90.f); //This also works
-
-// GetOwner()->SetActorRotation({0.f, 0.f, 0.f});
-
-/* float CurrentYaw = GetOwner()->GetActorRotation().Yaw;
-	FRotator OpenDoor(0.f, 0.f, 0.f);
-	OpenDoor.Yaw = FMath::Lerp(CurrentYaw, OpenAngle, 0.02f);
-	// OpenDoor.Yaw = FMath::FInterpConstantTo(CurrentYaw, OpenAngle, DeltaTime, 45.f);
-	// OpenDoor.Yaw = FMath::FInterpTo(CurrentYaw, OpenAngle, DeltaTime, 2.f);
-
-	GetOwner()->SetActorRotation(OpenDoor);
-
-	UE_LOG(LogTemp, Error, TEXT("TESTLINE")); */
-
-// Set Actor Rotation
-
-/* FRotator CurrentRotation = GetOwner()->GetActorRotation();
-	CurrentYaw = CurrentRotation.Yaw;
-	CurrentRotation.Yaw = FMath::FInterpTo(CurrentYaw, OpenAngle, DeltaTime, 2.f);
-	GetOwner()->SetActorRotation(CurrentRotation); */
-
-// CurrentYaw = FMath::FInterpTo(CurrentYaw, OpenAngle, DeltaTime, 2.f);
-// DoorRotation.Yaw = CurrentYaw;
-// GetOwner()->SetActorRotation(DoorRotation);
