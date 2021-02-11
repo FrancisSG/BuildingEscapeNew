@@ -71,13 +71,16 @@ float UOpenDoor::TotalMassOfActors() const
 	// Find All Overlapping Actors
 
 	TArray<AActor *> OverlappingActors;
-	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
-	
+	if (!PressurePlate)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PressurePlate is note set! Null Pointer detected."))
+		return TotalMass; //returns 0.f if PressurePlate is a nullPointer
+	}
+	PressurePlate->GetOverlappingActors(OUT OverlappingActors);	
 
 	// Add up their Masses
 	for (AActor *Actor : OverlappingActors)
 	{
-
 		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
 		UE_LOG(LogTemp, Warning, TEXT("%s is on the pressure plate!"), *Actor->GetName());
 	}
