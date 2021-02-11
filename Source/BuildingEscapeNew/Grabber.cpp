@@ -1,4 +1,5 @@
 #include "DrawDebugHelpers.h"
+#include "Components/AudioComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Grabber.h"
@@ -20,6 +21,7 @@ void UGrabber::BeginPlay()
 
 	// Checking for physics Handle component
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 
 	FindPhysicsHandle();

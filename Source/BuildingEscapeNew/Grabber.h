@@ -25,8 +25,12 @@ protected:
 private:
 	UPROPERTY(EditAnywhere)
 	float Reach = 250.f;
+
+	UPROPERTY()
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UPROPERTY(EditAnywhere)
 	UInputComponent* InputComponent = nullptr;
+
 
 	void Grab();
 	void Release();
@@ -42,4 +46,5 @@ private:
 	// Return PlayerViewPointLocation
 	FVector GetPlayerLocation() const;
 
+	
 };
