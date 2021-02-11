@@ -39,7 +39,7 @@ UPROPERTY(EditAnywhere)
 float OpenAngle = 90.f; //TargetYaw
 
 UPROPERTY(EditAnywhere)
-AActor* ActorThatOpens;
+AActor* ActorThatOpens = nullptr;
 
 float DoorLastOpened = 0.f;
 
@@ -53,7 +53,7 @@ UPROPERTY(EditAnywhere)
 float DoorCloseSpeed = 2.f;
 
 UPROPERTY(EditAnywhere)
-ATriggerVolume* PressurePlate;
+ATriggerVolume* PressurePlate = nullptr;
 
 UPROPERTY(EditAnywhere)
 float MassRequired = 50.f;
