@@ -25,7 +25,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditAnywhere)
 	float Reach = 250.f;
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* InputComponent = nullptr;
@@ -38,5 +37,10 @@ private:
 	// Return the first actor within reach with physics body.
 	FHitResult GetFirstPhysicsBodyInReach() const;
 
+	//Return the LineTraceEnd
+	FVector GetPlayerReach() const;
+
+	//Get Players Position in the World
+	FVector GetPlayerWorldPos() const;
 };
 
